@@ -3,10 +3,11 @@
 %1era entrega:
 
 %PUNTO 1:
-jugador(ana).
-jugador(beto).
-jugador(carola).
-jugador(dimitri).
+%ESTO NO HARIA FALTA
+%jugador(ana).
+%jugador(beto).
+%jugador(carola).
+%jugador(dimitri).
 
 civilizacion(incas).
 civilizacion(romanos).
@@ -38,13 +39,13 @@ tecnologiasDesarrolladas(dimitri,herreria).
 
 %PUNTO 2:
 esExpertoEnMetales(Jugador):-
-    jugador(Jugador),
+    %jugador(Jugador),
     tecnologiasDesarrolladas(Jugador,herreria),
     tecnologiasDesarrolladas(Jugador,forja),
     juega(Jugador,romanos).
 
 esExpertoEnMetales(Jugador):-
-    jugador(Jugador),
+    %jugador(Jugador),
     tecnologiasDesarrolladas(Jugador,herreria),
     tecnologiasDesarrolladas(Jugador,forja),
     tecnologiasDesarrolladas(Jugador,fundicion).
@@ -55,14 +56,15 @@ desarrolló herrería && desarrolló forja && (desarrolló fundición || juega c
 
 %PUNTO 3:
 civilizacionPopular(Civilizacion):-
-    civilizacion(Civilizacion),
+    %civilizacion(Civilizacion),
     juega(Jugador1,Civilizacion),
     juega(Jugador2,Civilizacion),
     Jugador1 \= Jugador2.
 
 %PUNTO 4:
 tieneAlcanceGlobal(Tecnologia):-
-    tecnologia(Tecnologia),
+    tecnologiasDesarrolladas(Jugador,Tecnologia),
+    %tecnologia(Tecnologia),
     forall(jugador(Jugador),tecnologiasDesarrolladas(Jugador,Tecnologia)).
 
 %forall(universoAcomprobar,dondeSeCompruebaCadaElementoDelUniverso).
@@ -70,11 +72,12 @@ tieneAlcanceGlobal(Tecnologia):-
 %PUNTO 5:
 civilizacionEsLider(Civilizacion):-
     civilizacion(Civilizacion),
-    forall(tecnologia(Tecnologia),civilizacionAlcanzoUnaTecnologia(Civilizacion,Tecnologia)).    
+    forall(civilizacionAlcanzoUnaTecnologia(_,Tecnologia),civilizacionAlcanzoUnaTecnologia(Civilizacion,Tecnologia)).    
+%primer argumento: las tecnologias que tienen asociada una civilizacion
 
 civilizacionAlcanzoUnaTecnologia(Civilizacion,Tecnologia):-
     juega(Jugador,Civilizacion),
-    tecnologiasDesarrolladas(Jugador,Tecnologia).
+    tecnologiasDesarrolladas(_,Tecnologia).
 
 %PRIMERA ENTREGA TERMINADA
 
