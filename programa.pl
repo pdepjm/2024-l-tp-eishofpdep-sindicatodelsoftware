@@ -99,6 +99,7 @@ piquero(Nivel, Escudo) :-
 
 %PUNTO 6
 
+%unidadJugador(Jugador,[]).
 unidadAna(ana,[caballo,piquero(1,conEscudo),piquero(2,sinEscudo)]).
 unidadBeto(beto,[caballo,piquero(1,conEscudo),campeon(100),campeon(80)]).
 unidadCarolo(carola,[piquero(3,sinEscudo),piquero(2,conEscudo)]).
@@ -109,12 +110,37 @@ unidadDimitri(dimitri,[]).
 %PUNTO 7
 
 vidaJineteCaballo(90).
-vidaJineteC(90).
+vidaJineteCamello(80).
 
 unidadConMasVida(Jugador) :-
     juega(Jugador,_).
-    
 
+%Cada campeón tiene una vida distinta
+vidaUnidad(campeon(Vida),Vida) :-
+    campeon(Vida), % para que la vida que le ponga se encuentre en 1 y 100 (limites incluidos)
+    Vida = Vida.
+
+% Los jinetes a camello tienen 80 de vida y los jinetes a caballo tienen 90.
+vidaUnidad(jinete(caballo),Vida) :-
+    Vida = 90.
+vidaUnidad(jinete(camello),Vida) :-
+    Vida = 80.
+
+% Los piqueros sin escudo de nivel 1 tienen vida 50, los de nivel 2 tienen vida 65 y los de nivel 3 tienen 70 de vida.-
+vidaUnidad(piquero(1,sinEscudo),Vida) :-
+    Vida = 50.
+vidaUnidad(piquero(2,sinEscudo),Vida) :-
+    Vida = 65.
+vidaUnidad(piquero(3,sinEscudo),Vida) :-
+    Vida = 70.
+
+% Los piqueros con escudo tienen 10% más de vida que los piqueros sin escudo.
+vidaUnidad(piquero(1,conEscudo),Vida) :-
+    Vida = 50 + (0.1 * 50).  % me lo va a mostrar asi tal cual en la terminal
+vidaUnidad(piquero(2,conEscudo),Vida) :-
+    Vida = 65 + (0.1 * 65).
+vidaUnidad(piquero(3,conEscudo),Vida) :-
+    Vida = 70 + (0.1 * 70).
 
 
 
