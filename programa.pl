@@ -63,9 +63,9 @@ civilizacionPopular(Civilizacion):-
 
 %PUNTO 4:
 tieneAlcanceGlobal(Tecnologia):-
-    tecnologiasDesarrolladas(Jugador,Tecnologia),
-    %tecnologia(Tecnologia),
-    forall(jugador(Jugador),tecnologiasDesarrolladas(Jugador,Tecnologia)).
+    %tecnologiasDesarrolladas(Jugador,Tecnologia),
+    tecnologia(Tecnologia),
+    forall(juega(Jugador,_),tecnologiasDesarrolladas(Jugador,Tecnologia)).  % para todos los jugadores si desarrollaron esa tecnologia (tecnologia ligada)
 
 %forall(universoAcomprobar,dondeSeCompruebaCadaElementoDelUniverso).
 
@@ -76,9 +76,46 @@ civilizacionEsLider(Civilizacion):-
 %primer argumento: las tecnologias que tienen asociada una civilizacion
 
 civilizacionAlcanzoUnaTecnologia(Civilizacion,Tecnologia):-
-    juega(Jugador,Civilizacion),
+    juega(Jugador,Civilizacion), % tiene que ser un jugador
     tecnologiasDesarrolladas(_,Tecnologia).
 
 %PRIMERA ENTREGA TERMINADA
+
+%2da entrega:
+
+campeon(Vida) :-
+    integer(Vida), %integer/1 se utiliza para verificar que un valor es un número entero.
+    Vida >= 1,
+    Vida =< 100.
+    
+jinete(caballo).
+jinete(camello).
+
+piquero(Nivel, Escudo) :-
+    integer(Nivel), %integer/1 se utiliza para verificar que un valor es un número entero.
+    Nivel >= 1,
+    Nivel =< 3,
+    member(Escudo,[conEscudo,sinEscudo]). % member/2 se utilizó para verificar si un elemento pertenece a una lista. Esto garantiza que los valores asignados a ciertos atributos de las unidades sean válidos y pertenecen a un conjunto predefinido de opciones.
+
+%PUNTO 6
+
+unidadAna(ana,[caballo,piquero(1,conEscudo),piquero(2,sinEscudo)]).
+unidadBeto(beto,[caballo,piquero(1,conEscudo),campeon(100),campeon(80)]).
+unidadCarolo(carola,[piquero(3,sinEscudo),piquero(2,conEscudo)]).
+unidadDimitri(dimitri,[]).
+
+% USE listas, utilizando corchetes [] para agrupar múltiples elementos ---> (jugador,[las unidades del jugador])}
+
+%PUNTO 7
+
+vidaJineteCaballo(90).
+vidaJineteC(90).
+
+unidadConMasVida(Jugador) :-
+    juega(Jugador,_).
+    
+
+
+
 
 
