@@ -37,6 +37,11 @@ tecnologiasDesarrolladas(carola,herreria).
 tecnologiasDesarrolladas(dimitri,fundicion).
 tecnologiasDesarrolladas(dimitri,herreria).
 
+juegaV2(ana, romanos, tecnologias([herreria,forja,emplumado,laminas])).
+juegaV2(beto, incas, tecnologias([forja,fundicion,herreria])).
+juegaV2(carola, romanos, tecnologias([herreria])).
+juegaV2(dimitri, romanos, tecnologias([fundicion,herreria])).
+
 %PUNTO 2:
 esExpertoEnMetales(Jugador):-
     %jugador(Jugador),
@@ -76,71 +81,103 @@ civilizacionEsLider(Civilizacion):-
 %primer argumento: las tecnologias que tienen asociada una civilizacion
 
 civilizacionAlcanzoUnaTecnologia(Civilizacion,Tecnologia):-
+    civilizacion(Civilizacion),
     juega(Jugador,Civilizacion), % tiene que ser un jugador
-    tecnologiasDesarrolladas(_,Tecnologia).
+    tecnologiasDesarrolladas(Jugador,Tecnologia).
+% ta raro el caso de incas!! (REVISAR) --> REVISADO
 
 %PRIMERA ENTREGA TERMINADA
 
 %2da entrega:
 
-campeon(Vida) :-
-    integer(Vida), %integer/1 se utiliza para verificar que un valor es un número entero.
-    Vida >= 1,
-    Vida =< 100.
+%campeon(Vida) :-
+%    integer(Vida), %integer/1 se utiliza para verificar que un valor es un número entero.
+    %Vida >= 1,
+    %Vida =< 100.
+%    between(1, 100, Vida). %"seria como un entre"
     
-jinete(caballo).
-jinete(camello).
+%jinete(caballo).
+%jinete(camello).
 
-piquero(Nivel, Escudo) :-
-    integer(Nivel), %integer/1 se utiliza para verificar que un valor es un número entero.
-    Nivel >= 1,
-    Nivel =< 3,
-    member(Escudo,[conEscudo,sinEscudo]). % member/2 se utilizó para verificar si un elemento pertenece a una lista. Esto garantiza que los valores asignados a ciertos atributos de las unidades sean válidos y pertenecen a un conjunto predefinido de opciones.
+%piquero(Nivel, Escudo) :-
+%    integer(Nivel), %integer/1 se utiliza para verificar que un valor es un número entero.
+    %Nivel >= 1,
+    %Nivel =< 3,
+%    between(1, 3, Nivel),
+%    member(Escudo,[conEscudo,sinEscudo]). % member/2 se utilizó para verificar si un elemento pertenece a una lista. Esto garantiza que los valores asignados a ciertos atributos de las unidades sean válidos y pertenecen a un conjunto predefinido de opciones.
 
 %PUNTO 6
 
 %unidadJugador(Jugador,[]).
-unidadAna(ana,[caballo,piquero(1,conEscudo),piquero(2,sinEscudo)]).
-unidadBeto(beto,[caballo,piquero(1,conEscudo),campeon(100),campeon(80)]).
-unidadCarolo(carola,[piquero(3,sinEscudo),piquero(2,conEscudo)]).
-unidadDimitri(dimitri,[]).
+unidadadesQueTiene(ana, unidades([jinete(caballo),piquero(1,conEscudo),piquero(2,sinEscudo)])).
+unidadadesQueTiene(beto, unidades([jinete(caballo),piquero(1,conEscudo),campeon(100),campeon(80)])).
+unidadadesQueTiene(carola, unidades([piquero(3,sinEscudo),piquero(2,conEscudo)])).
+unidadadesQueTiene(dimitri, unidades([])).
 
-% USE listas, utilizando corchetes [] para agrupar múltiples elementos ---> (jugador,[las unidades del jugador])}
+% USE listas, utilizando corchetes [] para agrupar múltiples elementos ---> (jugador, unidades([las unidades del jugador])).
 
 %PUNTO 7
 
-vidaJineteCaballo(90).
-vidaJineteCamello(80).
+%vidaJineteCaballo(90).
+%vidaJineteCamello(80).
 
-unidadConMasVida(Jugador) :-
-    juega(Jugador,_).
+vidaUnidad(jinete(caballo), 90).
+vidaUnidad(jinete(camello), 80).
+vidaUnidad(campeon(Vida), Vida).
+vidaUnidad(piquero(1,sinEscudo), 50).
+vidaUnidad(piquero(2,sinEscudo), 65).
+vidaUnidad(piquero(3,sinEscudo), 70).
 
-%Cada campeón tiene una vida distinta
-vidaUnidad(campeon(Vida),Vida) :-
-    campeon(Vida), % para que la vida que le ponga se encuentre en 1 y 100 (limites incluidos)
-    Vida = Vida.
+vidaUnidad(piquero(Nivel,conEscudo), Vida) :-
+    vidaUnidad(piquero(Nivel,sinEscudo),VidaSinEscudo),
+    Vida is VidaSinEscudo * 1,1.
+
+% Cada campeón tiene una vida distinta
+% vidaUnidad(campeon(Vida),Vida) :-
+%    campeon(Vida), % para que la vida que le ponga se encuentre en 1 y 100 (limites incluidos)
+%    Vida = Vida.
 
 % Los jinetes a camello tienen 80 de vida y los jinetes a caballo tienen 90.
-vidaUnidad(jinete(caballo),Vida) :-
-    Vida = 90.
-vidaUnidad(jinete(camello),Vida) :-
-    Vida = 80.
+% vidaUnidad(jinete(caballo),Vida) :-
+%     Vida = 90.
+% vidaUnidad(jinete(camello),Vida) :-
+%     Vida = 80.
 
 % Los piqueros sin escudo de nivel 1 tienen vida 50, los de nivel 2 tienen vida 65 y los de nivel 3 tienen 70 de vida.-
-vidaUnidad(piquero(1,sinEscudo),Vida) :-
-    Vida = 50.
-vidaUnidad(piquero(2,sinEscudo),Vida) :-
-    Vida = 65.
-vidaUnidad(piquero(3,sinEscudo),Vida) :-
-    Vida = 70.
+% vidaUnidad(piquero(1,sinEscudo),Vida) :-
+%     Vida = 50.
+% vidaUnidad(piquero(2,sinEscudo),Vida) :-
+%     Vida = 65.
+% vidaUnidad(piquero(3,sinEscudo),Vida) :-
+%     Vida = 70.
 
 % Los piqueros con escudo tienen 10% más de vida que los piqueros sin escudo.
-vidaUnidad(piquero(1,conEscudo),Vida) :-
-    Vida = 50 + (0.1 * 50).  % me lo va a mostrar asi tal cual en la terminal
-vidaUnidad(piquero(2,conEscudo),Vida) :-
-    Vida = 65 + (0.1 * 65).
-vidaUnidad(piquero(3,conEscudo),Vida) :-
-    Vida = 70 + (0.1 * 70).
+% vidaUnidad(piquero(1,conEscudo),Vida) :-
+%     Vida = 55.                   % 50 + (0.1 * 50).  % me lo va a mostrar asi tal cual en la terminal
+% vidaUnidad(piquero(2,conEscudo),Vida) :-
+%     Vida = 71.                   % 65 + (0.1 * 65).
+% vidaUnidad(piquero(3,conEscudo),Vida) :-
+%     Vida = 77.                   % 70 + (0.1 * 70).
+
+unidadConMasVida(Jugador,UnidadConMasVida) :-
+    juega(Jugador,_),
+    unidadadesQueTiene(Jugador,Unidades),
+    findall(VidaUnidad, vidaUnidad(Unidadades,VidaUnidad), VidasUnidades),  % .. --> CASI
+    maximo(VidasUnidades, UnidadConMasVida).
+
+% listaDeVidas(Jugador, VidasUnidades) :-
+%     juega(Jugador,_),
+%     findall(unidadadesQueTiene(Jugador,Unidad), vidaUnidad(Unidad,Vida), VidasUnidades).
+    
+maximo([X], X). %CASO BASE
+maximo([X|Xs], X) :-
+    maximo(Xs, Y),
+    X >= Y. % Si X es mayor o igual al maximo de la cola, entonces X es el maximo
+maximo([X|Xs], Y) :-
+    maximo(Xs, Y),
+    Y > X.  % Si Y es mayor que X, entonces Y es el maximo
+
+
 
 
 
