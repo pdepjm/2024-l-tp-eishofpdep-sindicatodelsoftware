@@ -108,11 +108,11 @@ civilizacionAlcanzoUnaTecnologia(Civilizacion,Tecnologia):-
 
 %PUNTO 6
 
-%unidadJugador(Jugador,[]).
-unidadadesQueTiene(ana, unidades([jinete(caballo),piquero(1,conEscudo),piquero(2,sinEscudo)])).
-unidadadesQueTiene(beto, unidades([jinete(caballo),piquero(1,conEscudo),campeon(100),campeon(80)])).
-unidadadesQueTiene(carola, unidades([piquero(3,sinEscudo),piquero(2,conEscudo)])).
-unidadadesQueTiene(dimitri, unidades([])).
+%unidadesQueTiene(Jugador,unidades[]).
+unidadesQueTiene(ana, unidades([jinete(caballo),piquero(1,conEscudo),piquero(2,sinEscudo)])).
+unidadesQueTiene(beto, unidades([jinete(caballo),piquero(1,conEscudo),campeon(100),campeon(80)])).
+unidadesQueTiene(carola, unidades([piquero(3,sinEscudo),piquero(2,conEscudo)])).
+unidadesQueTiene(dimitri, unidades([])).
 
 % USE listas, utilizando corchetes [] para agrupar múltiples elementos ---> (jugador, unidades([las unidades del jugador])).
 
@@ -130,7 +130,7 @@ vidaUnidad(piquero(3,sinEscudo), 70).
 
 vidaUnidad(piquero(Nivel,conEscudo), Vida) :-
     vidaUnidad(piquero(Nivel,sinEscudo),VidaSinEscudo),
-    Vida is VidaSinEscudo * 1,1.
+    Vida is VidaSinEscudo * 1,1. % le sumo el 10%
 
 % Cada campeón tiene una vida distinta
 % vidaUnidad(campeon(Vida),Vida) :-
@@ -159,23 +159,31 @@ vidaUnidad(piquero(Nivel,conEscudo), Vida) :-
 % vidaUnidad(piquero(3,conEscudo),Vida) :-
 %     Vida = 77.                   % 70 + (0.1 * 70).
 
-unidadConMasVida(Jugador,UnidadConMasVida) :-
-    juega(Jugador,_),
-    unidadadesQueTiene(Jugador,Unidades),
-    findall(VidaUnidad, vidaUnidad(Unidadades,VidaUnidad), VidasUnidades),  % .. --> CASI
-    maximo(VidasUnidades, UnidadConMasVida).
+unidadConMasVida(Jugador, UnidadConMasVida) :-
+    juega(Jugador,_),                       % el jugador juega
+    unidadesQueTiene(Jugador,unidades(Unidadades)),     % 
+    findall(VidaUnidad, (member(Unidad,Unidadades), vidaUnidad(Unidad,VidaUnidad)), VidasUnidades),  
+    max_member(UnidadConMasVida, VidasUnidades).
+    %maximo(VidasUnidades, UnidadConMasVida).
+
+
+% OJO CAROLA ME DA 70 Y ME DEBERIA DAR 71.5
+
+
+
+
 
 % listaDeVidas(Jugador, VidasUnidades) :-
 %     juega(Jugador,_),
 %     findall(unidadadesQueTiene(Jugador,Unidad), vidaUnidad(Unidad,Vida), VidasUnidades).
     
-maximo([X], X). %CASO BASE
-maximo([X|Xs], X) :-
-    maximo(Xs, Y),
-    X >= Y. % Si X es mayor o igual al maximo de la cola, entonces X es el maximo
-maximo([X|Xs], Y) :-
-    maximo(Xs, Y),
-    Y > X.  % Si Y es mayor que X, entonces Y es el maximo
+%maximo([X], X). %CASO BASE
+%maximo([X|Xs], X) :-
+%     maximo(Xs, Y),
+%     X >= Y. % Si X es mayor o igual al maximo de la cola, entonces X es el maximo
+% maximo([X|Xs], Y) :-
+%     maximo(Xs, Y),
+%     Y > X.  % Si Y es mayor que X, entonces Y es el maximo
 
 
 
