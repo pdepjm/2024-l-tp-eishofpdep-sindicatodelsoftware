@@ -81,7 +81,7 @@ civilizacionEsLider(Civilizacion):-
 %primer argumento: las tecnologias que tienen asociada una civilizacion
 
 civilizacionAlcanzoUnaTecnologia(Civilizacion,Tecnologia):-
-    civilizacion(Civilizacion),
+    %civilizacion(Civilizacion),
     juega(Jugador,Civilizacion), % tiene que ser un jugador
     tecnologiasDesarrolladas(Jugador,Tecnologia).
 % ta raro el caso de incas!! (REVISAR) --> REVISADO
@@ -109,10 +109,10 @@ civilizacionAlcanzoUnaTecnologia(Civilizacion,Tecnologia):-
 %PUNTO 6
 
 %unidadesQueTiene(Jugador,unidades[]).
-unidadesQueTiene(ana, unidades([jinete(caballo),piquero(1,conEscudo),piquero(2,sinEscudo)])).
-unidadesQueTiene(beto, unidades([jinete(caballo),piquero(1,conEscudo),campeon(100),campeon(80)])).
-unidadesQueTiene(carola, unidades([piquero(3,sinEscudo),piquero(2,conEscudo)])).
-unidadesQueTiene(dimitri, unidades([])).
+unidadesQueTiene(ana, [jinete(caballo),piquero(1,conEscudo),piquero(2,sinEscudo)]).
+unidadesQueTiene(beto, [jinete(caballo),piquero(1,conEscudo),campeon(100),campeon(80)]).
+unidadesQueTiene(carola, [piquero(3,sinEscudo),piquero(2,conEscudo)]).
+unidadesQueTiene(dimitri, []).
 
 % USE listas, utilizando corchetes [] para agrupar múltiples elementos ---> (jugador, unidades([las unidades del jugador])).
 
@@ -121,6 +121,7 @@ unidadesQueTiene(dimitri, unidades([])).
 %vidaJineteCaballo(90).
 %vidaJineteCamello(80).
 
+%vidaUnidad(Unidad, Vida).
 vidaUnidad(jinete(caballo), 90).
 vidaUnidad(jinete(camello), 80).
 vidaUnidad(campeon(Vida), Vida).
@@ -130,7 +131,7 @@ vidaUnidad(piquero(3,sinEscudo), 70).
 
 vidaUnidad(piquero(Nivel,conEscudo), Vida) :-
     vidaUnidad(piquero(Nivel,sinEscudo),VidaSinEscudo),
-    Vida is VidaSinEscudo * 1,1. % le sumo el 10%
+    Vida is VidaSinEscudo * 1.1. % le sumo el 10%
 
 % Cada campeón tiene una vida distinta
 % vidaUnidad(campeon(Vida),Vida) :-
@@ -159,19 +160,33 @@ vidaUnidad(piquero(Nivel,conEscudo), Vida) :-
 % vidaUnidad(piquero(3,conEscudo),Vida) :-
 %     Vida = 77.                   % 70 + (0.1 * 70).
 
-unidadConMasVida(Jugador, UnidadConMasVida) :-
-    juega(Jugador,_),                       % el jugador juega
-    unidadesQueTiene(Jugador,unidades(Unidadades)),     % 
-    findall(VidaUnidad, (member(Unidad,Unidadades), vidaUnidad(Unidad,VidaUnidad)), VidasUnidades),  
-    max_member(UnidadConMasVida, VidasUnidades).
+%unidadConMasVidaa(Jugador, UnidadConMasVida) :-
+%    juega(Jugador,_),                       % el jugador juega
+%    unidadesQueTiene(Jugador,unidades(Unidadades)),     % 
+%    findall(VidaUnidad, (member(Unidad,Unidadades), vidaUnidad(Unidad,VidaUnidad)), VidasUnidades),  
+%    max_member(UnidadConMasVida, VidasUnidades).
     %maximo(VidasUnidades, UnidadConMasVida).
-
 
 % OJO CAROLA ME DA 70 Y ME DEBERIA DAR 71.5
 
+unidadConMasVida(Jugador, UnidadConMasVida) :-
+    juega(Jugador, _),
+    unidadesQueTiene(Jugador, Unidades),
+    findall(VidaUnidad, (member(Unidad, Unidades), vidaUnidad(Unidad, VidaUnidad)), VidasUnidades),
+    max_member(UnidadConMasVida, VidasUnidades).
+    
+% HAY UN PROBLEMA CON ESTE PREDICADO unidadConMasVida, ME devuelve la Vida de la unidad con mas vida, pero no la unidad en si :(
 
+unidadConMasVidaUNIDAD(Jugador, UnidadConMasVida) :-
+    juega(Jugador, _),
+    unidadesQueTiene(Jugador, Unidadades),              % falta la inversibilidad de UnidadConMasVida
+    member(UnidadConMasVida, Unidadades),
+    forall(member(Unidad, Unidadades), tieneMayorVida(UnidadConMasVida, Unidad)).
 
-
+tieneMayorVida(Unidad1, Unidad2) :-
+    vidaUnidad(Unidad1, Vida1),
+    vidaUnidad(Unidad2, Vida2),
+    Vida1 > Vida2.
 
 % listaDeVidas(Jugador, VidasUnidades) :-
 %     juega(Jugador,_),
@@ -185,8 +200,22 @@ unidadConMasVida(Jugador, UnidadConMasVida) :-
 %     maximo(Xs, Y),
 %     Y > X.  % Si Y es mayor que X, entonces Y es el maximo
 
+% PUNTO 8
+% Si una unidad le gana a otra
 
+leGana(UnaUnidad, OtraUnidad) :-
+    vidaUnidad(UnaUnidad,_),        % ambas son unidades
+    vidaUnidad(OtraUnidad, _),
+    tieneVentajaSobre(UnaUnidad, OtraUnidad).
 
+leGana(UnaUnidad, OtraUnidad) :-
+    vidaUnidad(UnaUnidad,_),        % ambas son unidades
+    vidaUnidad(OtraUnidad, _),
+    not(tieneVentajaSobre(UnaUnidad, OtraUnidad)).
+    %   ........................
 
-
+tieneVentajaSobre(jinete(_), campeon(_)).   % Cualquier jinete le gana a cualquier campeón
+tieneVentajaSobre(campeon(), piquero(_,_)). % Cualquier campeón le gana a cualquier piquero
+tieneVentajaSobre(piquero(_,_), jinete(_)). % Cualquier piquero le gana a cualquier jinete
+tieneVentajaSobre(jinete(camello), jinete(caballo)). % Los jinetes a camello le ganan a los de caballo
 
