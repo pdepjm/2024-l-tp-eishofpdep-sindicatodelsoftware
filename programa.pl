@@ -81,21 +81,10 @@ civilizacionAlcanzoUnaTecnologia(Civilizacion,Tecnologia):-
 %soldados: campeones, jinetes y piqueros. con distinto nivel cada uno, con o sin escudo.
 %defino los tipos de unidades:
 
-%unidades de ana
-jinete(jugador(ana),caballo).
-piquero(jugador(ana),1,si).
-piquero(jugador(ana),2,no).
-
-%unidades de beto
-campeon(jugador(beto),100).
-campeon(jugador(beto),80).
-piquero(jugador(beto),1,si).
-jinete(jugador(beto),camello).
-
-%unidades de carola
-piquero(jugador(carola),3,no).
-piquero(jugador(carola),2,si).
-
+unidadesQueTiene(ana, [jinete(caballo),piquero(1,conEscudo),piquero(2,sinEscudo)]).
+unidadesQueTiene(beto, [jinete(caballo),piquero(1,conEscudo),campeon(100),campeon(80)]).
+unidadesQueTiene(carola, [piquero(3,sinEscudo),piquero(2,conEscudo)]).
+unidadesQueTiene(dimitri, []).
 
 campeon(jugador(Nombre),vida):-
     vida >= 1,
