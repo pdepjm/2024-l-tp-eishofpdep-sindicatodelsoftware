@@ -86,14 +86,14 @@ unidadesQueTiene(beto, [jinete(caballo),piquero(1,conEscudo),campeon(100),campeo
 unidadesQueTiene(carola, [piquero(3,sinEscudo),piquero(2,conEscudo)]).
 unidadesQueTiene(dimitri, []).
 
-campeon(jugador(Nombre),vida):-
+campeon(vida):-
     vida >= 1,
     vida =< 100.
 
-jinete(jugador(_),animal):-
+jinete(animal):-
     member(animal,[caballo,camello]). %verifico solo si el animal pertenece a la lista [caballo,camello]
 
-piquero(jugador(_),nivel,tieneEscudo):-
+piquero(nivel,tieneEscudo):-
     nivel >= 1,
     nivel =< 3,
     member(tieneEscudo,[si,no]).
@@ -134,16 +134,22 @@ vida_unidad(jugador(Nombre),Unidad,Vida):-
     Vida = VidaBase * 1.1.
     Unidad = piqueroConEscudo.    
 */
+
 %serviria para conocer la mayor vida de alguna unidad de jugador
-vidasUnidadesJugador(jugador(Nombre),ListaVidasUnidades):-
-    findall((Unidad,Vida),vida_unidad(jugador(Nombre),Unidad,Vida),ListaVidasUnidades). 
-    
+vidasUnidadesJugador(Jugador,ListaVidasUnidades):-
+    unidadesQueTiene(Jugador,Unidades),
+    findall((Unidad,Vida),vidaUnidad(Unidad,Vida),ListaVidasUnidades). 
+/*   
 unidadConMasVida(jugador(Nombre),Unidad,VidaMax):-
     vidasUnidadesJugador(jugador(Nombre),Vidas),
     max_list(Vidas,(Unidad,VidaMax)).
 
-
-
+*/
+unidadConMasVida(Jugador,Unidad,VidaMax):-
+    juega(Jugador),
+    unidadesQueTiene(Jugador,Unidades),
+    vidasUnidadesJugador(Jugador,Vidas),
+    max_list(Vidas,(Unidad,VidaMax)).
 
 
 
