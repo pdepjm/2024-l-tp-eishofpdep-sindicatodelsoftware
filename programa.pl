@@ -146,10 +146,12 @@ unidadConMasVida(jugador(Nombre),Unidad,VidaMax):-
 
 */
 unidadConMasVida(Jugador,Unidad,VidaMax):-
-    juega(Jugador),
+    juega(Jugador,_),
     unidadesQueTiene(Jugador,Unidades),
     vidasUnidadesJugador(Jugador,Vidas),
     max_list(Vidas,(Unidad,VidaMax)).
+
+
 
 
 
