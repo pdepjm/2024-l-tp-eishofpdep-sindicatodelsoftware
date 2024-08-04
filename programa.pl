@@ -109,7 +109,17 @@ piquero(jugador(_),nivel,tieneEscudo):-
     nivel =< 3,
     member(tieneEscudo,[si,no]).
 
+vidaUnidad(jinete(caballo), 90).
+vidaUnidad(jinete(camello), 80).
+vidaUnidad(campeon(Vida), Vida).
+vidaUnidad(piquero(1,sinEscudo), 50).
+vidaUnidad(piquero(2,sinEscudo), 65).
+vidaUnidad(piquero(3,sinEscudo), 70).
 
+vidaUnidad(piquero(Nivel,conEscudo), Vida) :-
+    vidaUnidad(piquero(Nivel,sinEscudo),VidaSinEscudo),
+    Vida is VidaSinEscudo * 1.1. % le sumo el 10%
+/*
 %VIDAS:
 vida_unidad(jugador(Nombre),Unidad,90):-
     jinete(jugador(Nombre),caballo),
@@ -134,7 +144,7 @@ vida_unidad(jugador(Nombre),Unidad,Vida):-
     (Nivel == 1 -> VidaBase = 50, Nivel == 2 -> VidaBase = 65, Nivel == 3 -> VidaBase = 70).
     Vida = VidaBase * 1.1.
     Unidad = piqueroConEscudo.    
-
+*/
 %serviria para conocer la mayor vida de alguna unidad de jugador
 vidasUnidadesJugador(jugador(Nombre),ListaVidasUnidades):-
     findall((Unidad,Vida),vida_unidad(jugador(Nombre),Unidad,Vida),ListaVidasUnidades). 
