@@ -78,4 +78,77 @@ civilizacionAlcanzoUnaTecnologia(Civilizacion,Tecnologia):-
 
 %PRIMERA ENTREGA TERMINADA
 
+%soldados: campeones, jinetes y piqueros. con distinto nivel cada uno, con o sin escudo.
+%defino los tipos de unidades:
+
+%unidades de ana
+jinete(jugador(ana),caballo).
+piquero(jugador(ana),1,si).
+piquero(jugador(ana),2,no).
+
+%unidades de beto
+campeon(jugador(beto),100).
+campeon(jugador(beto),80).
+piquero(jugador(beto),1,si).
+jinete(jugador(beto),camello).
+
+%unidades de carola
+piquero(jugador(carola),3,no).
+piquero(jugador(carola),2,si).
+
+
+campeon(jugador(Nombre),vida):-
+    vida >= 1,
+    vida =< 100.
+
+jinete(jugador(_),animal):-
+    member(animal,[caballo,camello]). %verifico solo si el animal pertenece a la lista [caballo,camello]
+
+piquero(jugador(_),nivel,tieneEscudo):-
+    nivel >= 1,
+    nivel =< 3,
+    member(tieneEscudo,[si,no]).
+
+
+%VIDAS:
+vida_unidad(jugador(Nombre),Unidad,90):-
+    jinete(jugador(Nombre),caballo),
+    Unidad = jinete.
+
+vida_unidad(jugador(Nombre),Unidad,80):-
+    jinete(jugador(Nombre),camello),
+    Unidad = jinete.
+
+vida_unidad(jugador(Nombre),Unidad,Vida):-
+    campeon(jugador(Nombre),Vida),
+    Unidad = campeon.   
+
+%PIQUEROS SIN ESCUDO
+vida_unidad(jugador(Nombre),Unidad,Vida):-
+    piquero(jugador(Nombre),Nivel,no),
+    (Nivel == 1 -> Vida = 50, Nivel == 2 -> Vida = 65, Nivel == 3 -> Vida = 70),
+    Unidad = piqueroSinEscudo.
+
+vida_unidad(jugador(Nombre),Unidad,Vida):-
+    piquero(jugador(Nombre),Nivel,si),
+    (Nivel == 1 -> VidaBase = 50, Nivel == 2 -> VidaBase = 65, Nivel == 3 -> VidaBase = 70).
+    Vida = VidaBase * 1.1.
+    Unidad = piqueroConEscudo.    
+
+%serviria para conocer la mayor vida de alguna unidad de jugador
+vidasUnidadesJugador(jugador(Nombre),ListaVidasUnidades):-
+    findall((Unidad,Vida),vida_unidad(jugador(Nombre),Unidad,Vida),ListaVidasUnidades). 
+    
+unidadConMasVida(jugador(Nombre),Unidad,VidaMax):-
+    vidasUnidadesJugador(jugador(Nombre),Vidas),
+    max_list(Vidas,(Unidad,VidaMax)).
+
+
+
+
+
+
+
+    
+
 
