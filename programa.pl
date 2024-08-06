@@ -108,7 +108,7 @@ civilizacionAlcanzoUnaTecnologia(Civilizacion,Tecnologia):-
 
 %PUNTO 6
 
-%unidadesQueTiene(Jugador,unidades[]).
+%unidadesQueTiene(Jugador,[unidades]).
 unidadesQueTiene(ana, [jinete(caballo),piquero(1,conEscudo),piquero(2,sinEscudo)]).
 unidadesQueTiene(beto, [jinete(caballo),piquero(1,conEscudo),campeon(100),campeon(80)]).
 unidadesQueTiene(carola, [piquero(3,sinEscudo),piquero(2,conEscudo)]).
@@ -173,15 +173,15 @@ unidadConMasVida(Jugador, UnidadConMasVida) :-
     juega(Jugador, _),
     unidadesQueTiene(Jugador, Unidades),
     findall(VidaUnidad, (member(Unidad, Unidades), vidaUnidad(Unidad, VidaUnidad)), VidasUnidades),
-    max_member(UnidadConMasVida, VidasUnidades).
-    
-% HAY UN PROBLEMA CON ESTE PREDICADO unidadConMasVida, ME devuelve la Vida de la unidad con mas vida, pero no la unidad en si :(
+    max_member(UnidadMaxima, VidasUnidades),
+    vidaUnidad(UnidadConMasVida,UnidadMaxima).
 
-unidadConMasVidaUNIDAD(Jugador, UnidadConMasVida) :-
-    juega(Jugador, _),
-    unidadesQueTiene(Jugador, Unidadades),              % falta la inversibilidad de UnidadConMasVida
-    member(UnidadConMasVida, Unidadades),
-    forall(member(Unidad, Unidadades), tieneMayorVida(UnidadConMasVida, Unidad)).
+%unidadConMasVidaV2(Jugador, UnidadConMasVida) :-
+%    juega(Jugador, _),
+%    unidadesQueTiene(Jugador, Unidades),
+%    member(UnidadConMasVida,Unidades),
+%    forall(member(OtraUnidad,Unidades), (OtraUnidad \= UnidadConMasVida, tieneMayorVida(UnidadConMasVida, OtraUnidad))).
+% HAY UN PROBLEMA CON ESTE PREDICADO unidadConMasVida, ME devuelve la Vida de la unidad con mas vida, pero no la unidad en si :(
 
 tieneMayorVida(Unidad1, Unidad2) :-
     vidaUnidad(Unidad1, Vida1),
@@ -211,11 +211,19 @@ leGana(UnaUnidad, OtraUnidad) :-
 leGana(UnaUnidad, OtraUnidad) :-
     vidaUnidad(UnaUnidad,_),        % ambas son unidades
     vidaUnidad(OtraUnidad, _),
-    not(tieneVentajaSobre(UnaUnidad, OtraUnidad)).
-    %   ........................
+    tieneMayorVida(UnaUnidad, OtraUnidad).
 
 tieneVentajaSobre(jinete(_), campeon(_)).   % Cualquier jinete le gana a cualquier campeón
-tieneVentajaSobre(campeon(), piquero(_,_)). % Cualquier campeón le gana a cualquier piquero
+tieneVentajaSobre(campeon(_), piquero(_,_)). % Cualquier campeón le gana a cualquier piquero
 tieneVentajaSobre(piquero(_,_), jinete(_)). % Cualquier piquero le gana a cualquier jinete
 tieneVentajaSobre(jinete(camello), jinete(caballo)). % Los jinetes a camello le ganan a los de caballo
 
+sobreviveAsidio(Jugador) :-
+    unidadesQueTiene(Jugador,Unidades),
+    cantidadUnidades(Unidades, piquero(_,conEscudo) , CantConEscudo),
+    cantidadUnidades(Unidades, piquero(_,sinEscudo) , CantSinEscudo),
+    CantConEscudo > CantSinEscudo.
+
+cantidadUnidades(Unidades,Unidad,CantidadUnidad) :-
+   findall(Unidad,member(Unidad,Unidades),ListaUnidades),
+   lenght(ListaUnidades,CantidadUnidad).
