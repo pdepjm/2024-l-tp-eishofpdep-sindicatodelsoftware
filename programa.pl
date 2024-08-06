@@ -78,84 +78,61 @@ civilizacionAlcanzoUnaTecnologia(Civilizacion,Tecnologia):-
 
 %PRIMERA ENTREGA TERMINADA
 
-%soldados: campeones, jinetes y piqueros. con distinto nivel cada uno, con o sin escudo.
-%defino los tipos de unidades:
+% Unidades de Ana
+unidad(ana, jinete(caballo)).
+unidad(ana, piquero(nivel(1), escudo)).
+unidad(ana, piquero(nivel(2), sinEscudo)).
 
-unidadesQueTiene(ana, [jinete(caballo),piquero(1,conEscudo),piquero(2,sinEscudo)]).
-unidadesQueTiene(beto, [jinete(caballo),piquero(1,conEscudo),campeon(100),campeon(80)]).
-unidadesQueTiene(carola, [piquero(3,sinEscudo),piquero(2,conEscudo)]).
-unidadesQueTiene(dimitri, []).
+% Unidades de Beto
+unidad(beto, campeon(100)).
+unidad(beto, campeon(80)).
+unidad(beto, piquero(nivel(1), escudo)).
+unidad(beto, jinete(camello)).
 
-campeon(vida):-
-    vida >= 1,
-    vida =< 100.
+% Unidades de Carola
+unidad(carola, piquero(nivel(3), sinEscudo)).
+unidad(carola, piquero(nivel(2), escudo)).
 
-jinete(animal):-
-    member(animal,[caballo,camello]). %verifico solo si el animal pertenece a la lista [caballo,camello]
+% Dimitri no tiene unidades
 
-piquero(nivel,tieneEscudo):-
-    nivel >= 1,
-    nivel =< 3,
-    member(tieneEscudo,[si,no]).
 
+vidaUnidad(campeon(Vida), Vida).
 vidaUnidad(jinete(caballo), 90).
 vidaUnidad(jinete(camello), 80).
-vidaUnidad(campeon(Vida), Vida).
-vidaUnidad(piquero(1,sinEscudo), 50).
-vidaUnidad(piquero(2,sinEscudo), 65).
-vidaUnidad(piquero(3,sinEscudo), 70).
-
-vidaUnidad(piquero(Nivel,conEscudo), Vida) :-
-    vidaUnidad(piquero(Nivel,sinEscudo),VidaSinEscudo),
-    Vida is VidaSinEscudo * 1.1. % le sumo el 10%
-/*
-%VIDAS:
-vida_unidad(jugador(Nombre),Unidad,90):-
-    jinete(jugador(Nombre),caballo),
-    Unidad = jinete.
-
-vida_unidad(jugador(Nombre),Unidad,80):-
-    jinete(jugador(Nombre),camello),
-    Unidad = jinete.
-
-vida_unidad(jugador(Nombre),Unidad,Vida):-
-    campeon(jugador(Nombre),Vida),
-    Unidad = campeon.   
-
-%PIQUEROS SIN ESCUDO
-vida_unidad(jugador(Nombre),Unidad,Vida):-
-    piquero(jugador(Nombre),Nivel,no),
-    (Nivel == 1 -> Vida = 50, Nivel == 2 -> Vida = 65, Nivel == 3 -> Vida = 70),
-    Unidad = piqueroSinEscudo.
-
-vida_unidad(jugador(Nombre),Unidad,Vida):-
-    piquero(jugador(Nombre),Nivel,si),
-    (Nivel == 1 -> VidaBase = 50, Nivel == 2 -> VidaBase = 65, Nivel == 3 -> VidaBase = 70).
-    Vida = VidaBase * 1.1.
-    Unidad = piqueroConEscudo.    
-*/
-
-%serviria para conocer la mayor vida de alguna unidad de jugador
-vidasUnidadesJugador(Jugador,ListaVidasUnidades):-
-    unidadesQueTiene(Jugador,Unidades),
-    findall((Unidad,Vida),vidaUnidad(Unidad,Vida),ListaVidasUnidades). 
-/*   
-unidadConMasVida(jugador(Nombre),Unidad,VidaMax):-
-    vidasUnidadesJugador(jugador(Nombre),Vidas),
-    max_list(Vidas,(Unidad,VidaMax)).
-
-*/
-unidadConMasVida(Jugador,Unidad,VidaMax):-
-    juega(Jugador,_),
-    unidadesQueTiene(Jugador,Unidades),
-    vidasUnidadesJugador(Jugador,Vidas),
-    max_list(Vidas,(Unidad,VidaMax)).
+vidaUnidad(piquero(nivel(1), sinEscudo), 50).
+vidaUnidad(piquero(nivel(2), sinEscudo), 65).
+vidaUnidad(piquero(nivel(3), sinEscudo), 70).
+vidaUnidad(piquero(nivel(N), escudo), Vida) :-
+    vidaUnidad(piquero(nivel(N), sinEscudo), VidaBase),
+    Vida is VidaBase * 1.1.
 
 
+unidadConMasVida(Jugador, Unidad) :-
+    findall((Vida,UnidadActual), (unidad(Jugador, UnidadActual), vidaUnidad(UnidadActual, Vida)), VidasUnidades),
+    max_member(Unidad, VidasUnidades).
 
+%PUNTO 8:
+ventaja(jinete(_),campeon(_)).
+ventaja(campeon(_),piquero(_,_)).
+ventaja(piquero(_,_),jinete(_)).
+ventaja(jinete(camello),jinete(caballo)).
 
+unidadLeGanaA(Unidad1,Unidad2):-
+    ventaja(Unidad1,Unidad2).
 
+unidadLeGanaA(Unidad1,Unidad2):-
+    not(ventaja(Unidad1,Unidad2)),
+    mayorVidaGana(Unidad1,Unidad2).
 
-    
+mayorVidaGana(Unidad1,Unidad2):-
+    vidaUnidad(Unidad1,Vida1),
+    vidaUnidad(Unidad2,Vida2),
+    Vida1 > Vida2.
 
+sobreviveAlAsedio(Jugador):-
+    findall(piquero(_,escudo),unidad(Jugador,piquero(_,escudo)),UnidadesConEscudo),
+    findall(piquero(_,sinEscudo),unidad(Jugador,piquero(_,sinEscudo)),UnidadesSinEscudo),
+    length(UnidadesConEscudo,LCE),
+    length(UnidadesSinEscudo,LSE),
+    LCE > LSE.
 
