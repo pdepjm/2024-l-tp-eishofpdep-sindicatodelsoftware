@@ -124,7 +124,7 @@ unidadesQueTiene(dimitri, []).
 %vidaUnidad(Unidad, Vida).
 vidaUnidad(jinete(caballo), 90).
 vidaUnidad(jinete(camello), 80).
-vidaUnidad(campeon(Vida), Vida).
+vidaUnidad(campeon(Vida), Vida):- between(1, 100, Vida).
 vidaUnidad(piquero(1,sinEscudo), 50).
 vidaUnidad(piquero(2,sinEscudo), 65).
 vidaUnidad(piquero(3,sinEscudo), 70).
@@ -172,6 +172,7 @@ vidaUnidad(piquero(Nivel,conEscudo), Vida) :-
 unidadConMasVida(Jugador, UnidadConMasVida) :-
     juega(Jugador, _),
     unidadesQueTiene(Jugador, Unidades),
+    member(UnidadConMasVida, Unidades),
     findall(VidaUnidad, (member(Unidad, Unidades), vidaUnidad(Unidad, VidaUnidad)), VidasUnidades),
     max_member(UnidadMaxima, VidasUnidades),
     vidaUnidad(UnidadConMasVida,UnidadMaxima).
@@ -200,17 +201,18 @@ tieneMayorVida(Unidad1, Unidad2) :-
 %     maximo(Xs, Y),
 %     Y > X.  % Si Y es mayor que X, entonces Y es el maximo
 
-% PUNTO 8
+% PUNTO 8:
 % Si una unidad le gana a otra
 
 leGana(UnaUnidad, OtraUnidad) :-
     vidaUnidad(UnaUnidad,_),        % ambas son unidades
     vidaUnidad(OtraUnidad, _),
     tieneVentajaSobre(UnaUnidad, OtraUnidad).
-
+    
 leGana(UnaUnidad, OtraUnidad) :-
     vidaUnidad(UnaUnidad,_),        % ambas son unidades
     vidaUnidad(OtraUnidad, _),
+    not(tieneVentajaSobre(UnaUnidad,OtraUnidad)),
     tieneMayorVida(UnaUnidad, OtraUnidad).
 
 tieneVentajaSobre(jinete(_), campeon(_)).   % Cualquier jinete le gana a cualquier campeón
@@ -218,12 +220,61 @@ tieneVentajaSobre(campeon(_), piquero(_,_)). % Cualquier campeón le gana a cual
 tieneVentajaSobre(piquero(_,_), jinete(_)). % Cualquier piquero le gana a cualquier jinete
 tieneVentajaSobre(jinete(camello), jinete(caballo)). % Los jinetes a camello le ganan a los de caballo
 
+%PUNTO 9
+%Si un jugador puede sobrevivir a un asedio
 sobreviveAsidio(Jugador) :-
-    unidadesQueTiene(Jugador,Unidades),
-    cantidadUnidades(Unidades, piquero(_,conEscudo) , CantConEscudo),
-    cantidadUnidades(Unidades, piquero(_,sinEscudo) , CantSinEscudo),
+    cantidadUnidades(Jugador, piquero(_,conEscudo) , CantConEscudo),
+    cantidadUnidades(Jugador, piquero(_,sinEscudo) , CantSinEscudo),
     CantConEscudo > CantSinEscudo.
 
-cantidadUnidades(Unidades,Unidad,CantidadUnidad) :-
-   findall(Unidad,member(Unidad,Unidades),ListaUnidades),
-   lenght(ListaUnidades,CantidadUnidad).
+cantidadUnidades(Jugador,Unidad,CantidadUnidad) :-
+    unidadesQueTiene(Jugador,Unidades),
+    findall(Unidad,member(Unidad,Unidades),ListaUnidades),
+    length(ListaUnidades,CantidadUnidad).
+
+%PUNTO 10 (Ana )
+
+
+dependencia(herreria, [emplumado(punzon),forja(fundicion(horno)),laminas(malla(placas))]).
+dependencia(molino, [collera(arado)]).
+
+dependenciaV2(herreria, [emplumado,forja,laminas]).
+dependenciaV2(emplumado, punzon).
+dependenciaV2(forja, fundicion).
+dependenciaV2(fundicion,horno).
+dependenciaV2(laminas,malla).
+dependenciaV2(malla, placas).
+dependenciaV2(molino, collera).
+dependenciaV2(collera, arado).
+
+/*
+
+tecnologiasDesarrolladas(ana,herreria).
+tecnologiasDesarrolladas(ana,forja).
+tecnologiasDesarrolladas(ana,emplumado).
+tecnologiasDesarrolladas(ana,laminas).
+
+tecnologiasDesarrolladas(beto,forja).
+tecnologiasDesarrolladas(beto,fundicion).
+tecnologiasDesarrolladas(beto,herreria).
+
+tecnologiasDesarrolladas(carola,herreria).
+
+tecnologiasDesarrolladas(dimitri,fundicion).
+tecnologiasDesarrolladas(dimitri,herreria).
+*/
+
+
+puedeDesarrollarTecnologia(Jugador, Tecnologia):-
+    tecnologiasDesarrolladas(Jugador, _),
+    forall(tecnologiasDesarrolladas(Jugador, TecnologiaQueTiene), dependenciaEntre(TecnologiaQueTiene, Tecnologia)).
+
+
+dependenciaEntre(Tecnologia1, Tecnologia3):- 
+    dependenciaV2(Tecnologia1,Tecnologia3).
+
+dependenciaEntre(Tecnologia1, Tecnologia3):-
+    dependenciaV2(Tecnologia1, Tecnologia2),
+    dependenciaEntre(Tecnologia2, Tecnologia3).
+
+
