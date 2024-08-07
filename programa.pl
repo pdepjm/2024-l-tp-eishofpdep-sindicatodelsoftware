@@ -238,7 +238,9 @@ cantidadUnidades(Jugador,Unidad,CantidadUnidad) :-
 dependencia(herreria, [emplumado(punzon),forja(fundicion(horno)),laminas(malla(placas))]).
 dependencia(molino, [collera(arado)]).
 
-dependenciaV2(herreria, [emplumado,forja,laminas]).
+dependenciaV2(herreria, emplumado).
+dependenciaV2(herreria, forja).
+dependenciaV2(herreria, laminas).
 dependenciaV2(emplumado, punzon).
 dependenciaV2(forja, fundicion).
 dependenciaV2(fundicion,horno).
@@ -263,11 +265,14 @@ tecnologiasDesarrolladas(dimitri,fundicion).
 tecnologiasDesarrolladas(dimitri,herreria).
 */
 
+esTecnologia(Tecnologia) :- dependenciaV2(Tecnologia,_).
+esTecnologia(Tecnologia) :- dependenciaV2(_,Tecnologia).
 
 puedeDesarrollarTecnologia(Jugador, Tecnologia):-
+    juega(Jugador,_),
+    esTecnologia(Tecnologia),
     not(tecnologiasDesarrolladas(Jugador, Tecnologia)),
     forall(dependenciaV2(TecnologiaRequerida, Tecnologia), tecnologiasDesarrolladas(Jugador, TecnologiaRequerida)).
-
 
 dependenciaEntre(Tecnologia1, Tecnologia3):- 
     dependenciaV2(Tecnologia1,Tecnologia3).
