@@ -124,7 +124,7 @@ unidadesQueTiene(dimitri, []).
 %vidaUnidad(Unidad, Vida).
 vidaUnidad(jinete(caballo), 90).
 vidaUnidad(jinete(camello), 80).
-vidaUnidad(campeon(Vida), Vida):- between(1, 100, Vida).
+vidaUnidad(campeon(Vida), Vida).
 vidaUnidad(piquero(1,sinEscudo), 50).
 vidaUnidad(piquero(2,sinEscudo), 65).
 vidaUnidad(piquero(3,sinEscudo), 70).
@@ -212,7 +212,7 @@ leGana(UnaUnidad, OtraUnidad) :-
 leGana(UnaUnidad, OtraUnidad) :-
     vidaUnidad(UnaUnidad,_),        % ambas son unidades
     vidaUnidad(OtraUnidad, _),
-    not(tieneVentajaSobre(UnaUnidad,OtraUnidad)),
+    not(tieneVentajaSobre(OtraUnidad,UnaUnidad)),
     tieneMayorVida(UnaUnidad, OtraUnidad).
 
 tieneVentajaSobre(jinete(_), campeon(_)).   % Cualquier jinete le gana a cualquier campeón
@@ -232,7 +232,7 @@ cantidadUnidades(Jugador,Unidad,CantidadUnidad) :-
     findall(Unidad,member(Unidad,Unidades),ListaUnidades),
     length(ListaUnidades,CantidadUnidad).
 
-%PUNTO 10 (Ana )
+%PUNTO 10 ()
 
 
 dependencia(herreria, [emplumado(punzon),forja(fundicion(horno)),laminas(malla(placas))]).
@@ -248,7 +248,6 @@ dependenciaV2(molino, collera).
 dependenciaV2(collera, arado).
 
 /*
-
 tecnologiasDesarrolladas(ana,herreria).
 tecnologiasDesarrolladas(ana,forja).
 tecnologiasDesarrolladas(ana,emplumado).
@@ -266,8 +265,8 @@ tecnologiasDesarrolladas(dimitri,herreria).
 
 
 puedeDesarrollarTecnologia(Jugador, Tecnologia):-
-    tecnologiasDesarrolladas(Jugador, _),
-    forall(tecnologiasDesarrolladas(Jugador, TecnologiaQueTiene), dependenciaEntre(TecnologiaQueTiene, Tecnologia)).
+    not(tecnologiasDesarrolladas(Jugador, Tecnologia)),
+    forall(dependenciaV2(TecnologiaRequerida, Tecnologia), tecnologiasDesarrolladas(Jugador, TecnologiaRequerida)).
 
 
 dependenciaEntre(Tecnologia1, Tecnologia3):- 
