@@ -17,11 +17,7 @@ juega(beto,incas).
 juega(carola,romanos).
 juega(dimitri,romanos).
 
-tecnologia(herreria).
-tecnologia(forja).
-tecnologia(emplumado).
-tecnologia(laminas).
-tecnologia(fundicion).
+tecnologia(Tecnologia) :- tecnologiasDesarrolladas(_, Tecnologia).
 
 tecnologiasDesarrolladas(ana,herreria).
 tecnologiasDesarrolladas(ana,forja).
@@ -47,13 +43,14 @@ esExpertoEnMetales(Jugador):-
     %jugador(Jugador),
     tecnologiasDesarrolladas(Jugador,herreria),
     tecnologiasDesarrolladas(Jugador,forja),
+    juegaRomanosODesarrollaFundicion(Jugador).
+
+juegaRomanosODesarrollaFundicion(Jugador) :-
+    tecnologiasDesarrolladas(Jugador,herreria);
     juega(Jugador,romanos).
 
-esExpertoEnMetales(Jugador):-
-    %jugador(Jugador),
-    tecnologiasDesarrolladas(Jugador,herreria),
-    tecnologiasDesarrolladas(Jugador,forja),
-    tecnologiasDesarrolladas(Jugador,fundicion).
+%juegaRomanosODesarrollaFundicion(Jugador) :-
+    
 
 /*
 desarrolló herrería && desarrolló forja && (desarrolló fundición || juega con los romanos)
@@ -68,15 +65,14 @@ civilizacionPopular(Civilizacion):-
 
 %PUNTO 4:
 tieneAlcanceGlobal(Tecnologia):-
-    %tecnologiasDesarrolladas(Jugador,Tecnologia),
-    tecnologia(Tecnologia),
+    tecnologiasDesarrolladas(_, Tecnologia),
     forall(juega(Jugador,_),tecnologiasDesarrolladas(Jugador,Tecnologia)).  % para todos los jugadores si desarrollaron esa tecnologia (tecnologia ligada)
 
 %forall(universoAcomprobar,dondeSeCompruebaCadaElementoDelUniverso).
 
 %PUNTO 5:
 civilizacionEsLider(Civilizacion):-
-    civilizacion(Civilizacion),
+    juega(_, Civilizacion),
     forall(civilizacionAlcanzoUnaTecnologia(_,Tecnologia),civilizacionAlcanzoUnaTecnologia(Civilizacion,Tecnologia)).    
 %primer argumento: las tecnologias que tienen asociada una civilizacion
 
@@ -114,6 +110,18 @@ unidadesQueTiene(beto, [jinete(caballo),piquero(1,conEscudo),campeon(100),campeo
 unidadesQueTiene(carola, [piquero(3,sinEscudo),piquero(2,conEscudo)]).
 unidadesQueTiene(dimitri, []).
 
+unidadQueTiene(ana, jinete(caballo)).
+unidadQueTiene(ana, piquero(1, conEscudo)).
+unidadQueTiene(ana, piquero(2, sinEscudo)).
+
+unidadQueTiene(beto, jinete(caballo)).
+unidadQueTiene(beto, piquero(1, conEscudo)).
+unidadQueTiene(beto, campeon(100)).
+unidadQueTiene(beto, campeon(80)).
+
+unidadQueTiene(carola, piquero(3, sinEscudo)).
+unidadQueTiene(carola, piquero(2, conEscudo)).
+
 % USE listas, utilizando corchetes [] para agrupar múltiples elementos ---> (jugador, unidades([las unidades del jugador])).
 
 %PUNTO 7
@@ -133,73 +141,15 @@ vidaUnidad(piquero(Nivel,conEscudo), Vida) :-
     vidaUnidad(piquero(Nivel,sinEscudo),VidaSinEscudo),
     Vida is VidaSinEscudo * 1.1. % le sumo el 10%
 
-% Cada campeón tiene una vida distinta
-% vidaUnidad(campeon(Vida),Vida) :-
-%    campeon(Vida), % para que la vida que le ponga se encuentre en 1 y 100 (limites incluidos)
-%    Vida = Vida.
-
-% Los jinetes a camello tienen 80 de vida y los jinetes a caballo tienen 90.
-% vidaUnidad(jinete(caballo),Vida) :-
-%     Vida = 90.
-% vidaUnidad(jinete(camello),Vida) :-
-%     Vida = 80.
-
-% Los piqueros sin escudo de nivel 1 tienen vida 50, los de nivel 2 tienen vida 65 y los de nivel 3 tienen 70 de vida.-
-% vidaUnidad(piquero(1,sinEscudo),Vida) :-
-%     Vida = 50.
-% vidaUnidad(piquero(2,sinEscudo),Vida) :-
-%     Vida = 65.
-% vidaUnidad(piquero(3,sinEscudo),Vida) :-
-%     Vida = 70.
-
-% Los piqueros con escudo tienen 10% más de vida que los piqueros sin escudo.
-% vidaUnidad(piquero(1,conEscudo),Vida) :-
-%     Vida = 55.                   % 50 + (0.1 * 50).  % me lo va a mostrar asi tal cual en la terminal
-% vidaUnidad(piquero(2,conEscudo),Vida) :-
-%     Vida = 71.                   % 65 + (0.1 * 65).
-% vidaUnidad(piquero(3,conEscudo),Vida) :-
-%     Vida = 77.                   % 70 + (0.1 * 70).
-
-%unidadConMasVidaa(Jugador, UnidadConMasVida) :-
-%    juega(Jugador,_),                       % el jugador juega
-%    unidadesQueTiene(Jugador,unidades(Unidadades)),     % 
-%    findall(VidaUnidad, (member(Unidad,Unidadades), vidaUnidad(Unidad,VidaUnidad)), VidasUnidades),  
-%    max_member(UnidadConMasVida, VidasUnidades).
-    %maximo(VidasUnidades, UnidadConMasVida).
-
-% OJO CAROLA ME DA 70 Y ME DEBERIA DAR 71.5
-
 unidadConMasVida(Jugador, UnidadConMasVida) :-
-    juega(Jugador, _),
-    unidadesQueTiene(Jugador, Unidades),
-    member(UnidadConMasVida, Unidades),
-    findall(VidaUnidad, (member(Unidad, Unidades), vidaUnidad(Unidad, VidaUnidad)), VidasUnidades),
-    max_member(UnidadMaxima, VidasUnidades),
-    vidaUnidad(UnidadConMasVida,UnidadMaxima).
-
-%unidadConMasVidaV2(Jugador, UnidadConMasVida) :-
-%    juega(Jugador, _),
-%    unidadesQueTiene(Jugador, Unidades),
-%    member(UnidadConMasVida,Unidades),
-%    forall(member(OtraUnidad,Unidades), (OtraUnidad \= UnidadConMasVida, tieneMayorVida(UnidadConMasVida, OtraUnidad))).
-% HAY UN PROBLEMA CON ESTE PREDICADO unidadConMasVida, ME devuelve la Vida de la unidad con mas vida, pero no la unidad en si :(
+    unidadQueTiene(Jugador, UnidadConMasVida),
+    vidaUnidad(UnidadConMasVida, VidaMayor),
+    forall((unidadQueTiene(Jugador, OtraUnidad), vidaUnidad(OtraUnidad, VidaMenor), OtraUnidad \= UnidadConMasVida), VidaMayor > VidaMenor).
 
 tieneMayorVida(Unidad1, Unidad2) :-
     vidaUnidad(Unidad1, Vida1),
     vidaUnidad(Unidad2, Vida2),
     Vida1 > Vida2.
-
-% listaDeVidas(Jugador, VidasUnidades) :-
-%     juega(Jugador,_),
-%     findall(unidadadesQueTiene(Jugador,Unidad), vidaUnidad(Unidad,Vida), VidasUnidades).
-    
-%maximo([X], X). %CASO BASE
-%maximo([X|Xs], X) :-
-%     maximo(Xs, Y),
-%     X >= Y. % Si X es mayor o igual al maximo de la cola, entonces X es el maximo
-% maximo([X|Xs], Y) :-
-%     maximo(Xs, Y),
-%     Y > X.  % Si Y es mayor que X, entonces Y es el maximo
 
 % PUNTO 8:
 % Si una unidad le gana a otra
@@ -223,31 +173,28 @@ tieneVentajaSobre(jinete(camello), jinete(caballo)). % Los jinetes a camello le 
 %PUNTO 9
 %Si un jugador puede sobrevivir a un asedio
 sobreviveAsidio(Jugador) :-
+    unidadQueTiene(Jugador,_),
     cantidadUnidades(Jugador, piquero(_,conEscudo) , CantConEscudo),
     cantidadUnidades(Jugador, piquero(_,sinEscudo) , CantSinEscudo),
     CantConEscudo > CantSinEscudo.
 
-cantidadUnidades(Jugador,Unidad,CantidadUnidad) :-
-    unidadesQueTiene(Jugador,Unidades),
-    findall(Unidad,member(Unidad,Unidades),ListaUnidades),
+cantidadUnidades(Jugador, Unidad, CantidadUnidad) :-
+    %unidadQueTiene(Jugador,Unidad),
+    findall(Unidad, unidadQueTiene(Jugador,Unidad), ListaUnidades),
     length(ListaUnidades,CantidadUnidad).
 
 %PUNTO 10 ()
 
-
-dependencia(herreria, [emplumado(punzon),forja(fundicion(horno)),laminas(malla(placas))]).
-dependencia(molino, [collera(arado)]).
-
-dependenciaV2(herreria, emplumado).
-dependenciaV2(herreria, forja).
-dependenciaV2(herreria, laminas).
-dependenciaV2(emplumado, punzon).
-dependenciaV2(forja, fundicion).
-dependenciaV2(fundicion,horno).
-dependenciaV2(laminas,malla).
-dependenciaV2(malla, placas).
-dependenciaV2(molino, collera).
-dependenciaV2(collera, arado).
+dependencia(herreria, emplumado).
+dependencia(herreria, forja).
+dependencia(herreria, laminas).
+dependencia(emplumado, punzon).
+dependencia(forja, fundicion).
+dependencia(fundicion,horno).
+dependencia(laminas,malla).
+dependencia(malla, placas).
+dependencia(molino, collera).
+dependencia(collera, arado).
 
 /*
 tecnologiasDesarrolladas(ana,herreria).
@@ -265,20 +212,14 @@ tecnologiasDesarrolladas(dimitri,fundicion).
 tecnologiasDesarrolladas(dimitri,herreria).
 */
 
-esTecnologia(Tecnologia) :- dependenciaV2(Tecnologia,_).
-esTecnologia(Tecnologia) :- dependenciaV2(_,Tecnologia).
+esTecnologia(Tecnologia) :- dependencia(Tecnologia,_).
+esTecnologia(Tecnologia) :- dependencia(_,Tecnologia).
 
 puedeDesarrollarTecnologia(Jugador, Tecnologia):-
     juega(Jugador,_),
     esTecnologia(Tecnologia),
     not(tecnologiasDesarrolladas(Jugador, Tecnologia)),
-    forall(dependenciaV2(TecnologiaRequerida, Tecnologia), tecnologiasDesarrolladas(Jugador, TecnologiaRequerida)).
+    forall(dependencia(TecnologiaRequerida, Tecnologia), tecnologiasDesarrolladas(Jugador, TecnologiaRequerida)).
 
-dependenciaEntre(Tecnologia1, Tecnologia3):- 
-    dependenciaV2(Tecnologia1,Tecnologia3).
-
-dependenciaEntre(Tecnologia1, Tecnologia3):-
-    dependenciaV2(Tecnologia1, Tecnologia2),
-    dependenciaEntre(Tecnologia2, Tecnologia3).
 
 
